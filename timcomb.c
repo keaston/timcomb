@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+int count;
+int quiet;
 
 void do_timcomb(int n, int r, int c, int *a)
 {
@@ -8,21 +12,25 @@ void do_timcomb(int n, int r, int c, int *a)
 		/* output the result */
 		int i, j;
 
-		putchar('{');
-		for (i = 0; i < n; i++)
+		count++;
+		if (!quiet)
 		{
-			if (i)
-				putchar(','), putchar(' ');
-			putchar('(');	
-			for (j = 0; j < n; j++)
+			putchar('{');
+			for (i = 0; i < n; i++)
 			{
-				if (j)
+				if (i)
 					putchar(','), putchar(' ');
-				printf("%d", a[i * n + j]);
+				putchar('(');	
+				for (j = 0; j < n; j++)
+				{
+					if (j)
+						putchar(','), putchar(' ');
+					printf("%d", a[i * n + j]);
+				}
+				putchar(')');
 			}
-			putchar(')');
+			puts("}");
 		}
-		puts("}");
 	}
 	else
 	{
@@ -70,12 +78,14 @@ int main(int argc, char *argv[])
 
 	if (argc < 2)
 	{
-		fprintf(stderr, "Usage: %s <n>\n", argv[0]);
+		fprintf(stderr, "Usage: %s <n> [qc]\n", argv[0]);
 		return 1;
 	}
 
 	n = atoi(argv[1]);
 	a = malloc(n * n * sizeof *a);
+
+	quiet = argc > 2 && strchr(argv[2], 'q');
 
 	if (!a)
 	{
@@ -84,6 +94,9 @@ int main(int argc, char *argv[])
 	}
 
 	do_timcomb(n, 0, 0, a);
+
+	if (argc > 2 && strchr(argv[2], 'c'))
+		printf("Count: %d\n", count);
 
 	return 0;
 }
